@@ -34,6 +34,8 @@ label{font-size:14px;color:#c8d3e2}
 .check input{width:20px;margin:0}
 .hidden{display:none}
 .record{font-size:25px;font-weight:bold;margin:7px 0}
+.records-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.record-box{background:#101827;border-radius:10px;padding:13px}
 hr{border:0;border-top:1px solid #304158;margin:20px 0}
 footer{color:#8392a8;font-size:12px;text-align:center;margin:35px 0}
 </style>
@@ -46,6 +48,21 @@ footer{color:#8392a8;font-size:12px;text-align:center;margin:35px 0}
 <p class="subtitle">Objectif : semi-marathon • 21,1 km</p>
 
 <div class="panel">
+<h3>🏆 Mes records personnels</h3>
+<div class="records-grid">
+<div class="record-box">
+<p class="muted">Plus longue distance</p>
+<div class="record" id="bestDistance">0 km</div>
+</div>
+<div class="record-box">
+<p class="muted">Meilleure allure</p>
+<div class="record" id="bestPace">--:--</div>
+</div>
+</div>
+<p class="muted">Records actualisés automatiquement avec tes résultats.</p>
+</div>
+
+<div class="panel">
 <strong>Mon programme de 24 semaines</strong>
 <p class="muted">Départ : lundi 16 novembre 2026</p>
 <p class="muted">Course : lundi, mercredi et vendredi.</p>
@@ -53,15 +70,6 @@ footer{color:#8392a8;font-size:12px;text-align:center;margin:35px 0}
 </div>
 
 <div id="weeks"></div>
-
-<h2>🏆 Mes records personnels</h2>
-<div class="panel">
-<p class="muted">Plus longue distance</p>
-<div class="record" id="bestDistance">0 km</div>
-<hr>
-<p class="muted">Meilleure allure moyenne</p>
-<div class="record" id="bestPace">--:-- /km</div>
-</div>
 </section>
 
 <section id="details" class="hidden">
@@ -100,10 +108,13 @@ Séance terminée
 <input id="distance" type="number" min="0" step="0.01" placeholder="Distance en km">
 
 <label for="time">Temps total réalisé</label>
-<input id="time" type="text" placeholder="Temps réalisé">
+<input id="time" type="text" placeholder="Temps total">
 
 <label for="pace">Allure moyenne (min/km)</label>
 <input id="pace" type="text" placeholder="Ex : 6:40">
+
+<label for="calories">Calories dépensées (kcal)</label>
+<input id="calories" type="number" min="0" step="1" placeholder="Calories indiquées par ta montre">
 
 <button onclick="validateSession()">Valider la séance</button>
 </div>
@@ -189,11 +200,9 @@ function renderCalendar(){
       heading.textContent = day+" • "+dateLabel(d);
 
       const description = document.createElement("small");
-      if(isRun){
-        description.textContent = program[index][runDays.indexOf(dayIndex)];
-      }else{
-        description.textContent = "Repos";
-      }
+      description.textContent = isRun
+        ? program[index][runDays.indexOf(dayIndex)]
+        : "Repos";
 
       const status = document.createElement("p");
       status.className = "tag";
@@ -204,10 +213,7 @@ function renderCalendar(){
       }
 
       card.append(heading,description,status);
-
-      if(isRun){
-        card.onclick = ()=>openSession(index,dayIndex);
-      }
+      if(isRun) card.onclick = ()=>openSession(index,dayIndex);
       section.appendChild(card);
     });
 
@@ -232,6 +238,7 @@ function openSession(week,dayIndex){
   document.getElementById("detailDate").textContent = dateLabel(d);
 
   const isIntervals = workout.includes("×") || workout.includes("accélérations");
+
   document.getElementById("warmup").textContent =
     isIntervals ? "8 à 10 minutes de course très facile." : "5 minutes de course tranquille.";
 
@@ -244,6 +251,7 @@ function openSession(week,dayIndex){
   document.getElementById("distance").value = saved.distance || "";
   document.getElementById("time").value = saved.time || "";
   document.getElementById("pace").value = saved.pace || "";
+  document.getElementById("calories").value = saved.calories || "";
 }
 
 function validateSession(){
@@ -253,10 +261,11 @@ function validateSession(){
   const key = dateKey(d);
 
   results[key] = {
-    completed:true,
+    completed:document.getElementById("completed").checked,
     distance:document.getElementById("distance").value,
     time:document.getElementById("time").value.trim(),
-    pace:document.getElementById("pace").value.trim()
+    pace:document.getElementById("pace").value.trim(),
+    calories:document.getElementById("calories").value
   };
 
   localStorage.setItem(storageKey,JSON.stringify(results));
@@ -299,7 +308,7 @@ function updateRecords(){
     maxDistance.toLocaleString("fr-FR",{maximumFractionDigits:2})+" km";
 
   document.getElementById("bestPace").textContent =
-    bestPace===null ? "--:-- /km" :
+    bestPace===null ? "--:--" :
     Math.floor(bestPace/60)+":"+String(bestPace%60).padStart(2,"0")+" /km";
 }
 
