@@ -4,158 +4,306 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#151b2b">
-<title>Mon suivi sportif</title>
+<meta name="theme-color" content="#101827">
+<title>Mon suivi course</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101522;color:#f5f6fa;font-family:Arial,sans-serif;padding:20px}
-header{text-align:center;margin-bottom:22px}
-h1{font-size:26px;margin:8px 0}
-.sub{color:#aab2c5;font-size:14px}
-.panel{background:#1b2435;border:1px solid #303b50;border-radius:16px;padding:16px;margin:14px 0}
-.month{display:flex;justify-content:space-between;align-items:center}
-button{background:#35445f;color:white;border:0;border-radius:9px;padding:10px 13px;font-size:15px;cursor:pointer}
-#calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:15px}
-.weekday{text-align:center;color:#aab2c5;font-size:12px;padding:5px 0}
-.day{min-height:47px;padding:7px 2px;text-align:center;background:#273249;border-radius:9px;font-size:14px}
-.day.selected{outline:2px solid #8ba8ff;background:#354b75}
-.day.today{border:1px solid #a9c0ff}
-.day .dot{display:block;color:#a9c0ff;font-size:10px;margin-top:3px}
-.muted{opacity:.25}
-h2{font-size:19px;margin:0 0 12px}
-h3{font-size:15px;margin:14px 0 8px;color:#c4d2ff}
-.tag{font-size:12px;color:#aab2c5}
-label{display:block;margin:12px 0 6px;font-size:14px}
-textarea,input{width:100%;background:#111a29;color:white;border:1px solid #46536b;border-radius:9px;padding:11px;font:14px Arial}
-textarea{min-height:120px;resize:vertical;line-height:1.5}
-.check{display:flex;align-items:center;gap:9px;margin:12px 0}
-.check input{width:19px;height:19px}
-.stats{display:flex;gap:10px}
-.stat{flex:1;background:#273249;border-radius:10px;padding:12px;text-align:center}
-.stat strong{display:block;font-size:23px;margin-bottom:4px}
-.small{font-size:12px;color:#aab2c5}
-footer{text-align:center;color:#8490a6;font-size:12px;margin:25px 0}
+body{margin:0;background:#101827;color:#f3f5fa;font-family:Arial,sans-serif;padding:18px}
+main{max-width:760px;margin:auto}
+h1{font-size:27px;margin-bottom:5px}
+h2{font-size:21px}
+h3{font-size:17px}
+.subtitle,.muted{color:#9ba9bd;font-size:14px}
+.panel{background:#1b293c;border:1px solid #304158;border-radius:15px;padding:17px;margin:14px 0}
+.week{margin-top:25px}
+.week h3{color:#a9c9ff;margin-bottom:10px}
+.day{background:#1b293c;border:1px solid #304158;border-radius:12px;padding:13px;margin:8px 0;cursor:pointer}
+.day strong{display:block;margin-bottom:5px}
+.day small{color:#aab8ca}
+.day.done{background:#174b37;border:1px solid #25865b}
+.day.done small{color:#b8ebd0}
+.day.rest{opacity:.55;cursor:default}
+.tag{font-size:12px;color:#a9c9ff}
+button{background:#3478e5;color:white;border:0;padding:13px 16px;border-radius:9px;font-weight:bold;cursor:pointer;width:100%;font-size:15px}
+button.secondary{background:#304158;margin-bottom:12px}
+input{width:100%;background:#101827;color:white;border:1px solid #40536c;border-radius:8px;padding:12px;margin:7px 0 16px;font-size:16px}
+label{font-size:14px;color:#c8d3e2}
+.step{background:#101827;border-radius:10px;padding:13px;margin:10px 0;line-height:1.5}
+.step span{display:block;color:#9ba9bd;font-size:12px;margin-bottom:5px}
+.check{display:flex;align-items:center;gap:10px;margin:14px 0}
+.check input{width:20px;margin:0}
+.hidden{display:none}
+.record{font-size:25px;font-weight:bold;margin:7px 0}
+hr{border:0;border-top:1px solid #304158;margin:20px 0}
+footer{color:#8392a8;font-size:12px;text-align:center;margin:35px 0}
 </style>
 </head>
 <body>
-<header>
-  <div class="sub">TON ESPACE PERSONNEL</div>
-  <h1>💪 Mon suivi sportif</h1>
-  <div class="sub">Musculation • Course à pied • Progression</div>
-</header>
+<main>
 
-<section class="panel">
-  <div class="month">
-    <button onclick="changeMonth(-1)">‹</button>
-    <h2 id="monthTitle"></h2>
-    <button onclick="changeMonth(1)">›</button>
-  </div>
-  <div id="calendar"></div>
-  <div class="small" style="margin-top:12px">Appuie sur une date pour afficher et modifier ta séance.</div>
+<section id="calendar">
+<h1>🏃 Mon suivi course</h1>
+<p class="subtitle">Objectif : semi-marathon • 21,1 km</p>
+
+<div class="panel">
+<strong>Mon programme de 24 semaines</strong>
+<p class="muted">Départ : lundi 16 novembre 2026</p>
+<p class="muted">Course : lundi, mercredi et vendredi.</p>
+<p class="muted">Repos complet : samedi et dimanche.</p>
+</div>
+
+<div id="weeks"></div>
+
+<h2>🏆 Mes records personnels</h2>
+<div class="panel">
+<p class="muted">Plus longue distance</p>
+<div class="record" id="bestDistance">0 km</div>
+<hr>
+<p class="muted">Meilleure allure moyenne</p>
+<div class="record" id="bestPace">--:-- /km</div>
+</div>
 </section>
 
-<section class="panel">
-  <h2 id="selectedTitle">Ta séance</h2>
-  <div class="tag" id="dayType"></div>
-  <div id="sessionArea"></div>
+<section id="details" class="hidden">
+<button class="secondary" onclick="goBack()">← Retour au calendrier</button>
+
+<div class="panel">
+<div class="tag" id="detailWeek"></div>
+<h2 id="detailTitle"></h2>
+<p class="muted" id="detailDate"></p>
+<hr>
+<h3>Ta séance</h3>
+
+<div class="step">
+<span>1 • ÉCHAUFFEMENT</span>
+<strong id="warmup"></strong>
+</div>
+<div class="step">
+<span>2 • SÉANCE PRINCIPALE</span>
+<strong id="mainWorkout"></strong>
+</div>
+<div class="step">
+<span>3 • FIN DE SÉANCE</span>
+<strong id="cooldown"></strong>
+</div>
+
+<label class="check">
+<input type="checkbox" id="completed">
+Séance terminée
+</label>
+</div>
+
+<div class="panel">
+<h3>📊 Résultat après la course</h3>
+
+<label for="distance">Distance parcourue (km)</label>
+<input id="distance" type="number" min="0" step="0.01" placeholder="Distance en km">
+
+<label for="time">Temps total réalisé</label>
+<input id="time" type="text" placeholder="Temps réalisé">
+
+<label for="pace">Allure moyenne (min/km)</label>
+<input id="pace" type="text" placeholder="Ex : 6:40">
+
+<button onclick="validateSession()">Valider la séance</button>
+</div>
 </section>
 
-<section class="panel">
-  <h2>📊 Mon bilan</h2>
-  <div class="stats">
-    <div class="stat"><strong id="strengthCount">0</strong><span class="small">Séances muscu</span></div>
-    <div class="stat"><strong id="runCount">0</strong><span class="small">Courses</span></div>
-  </div>
-  <p class="small">Tes séances terminées sont comptabilisées automatiquement.</p>
-</section>
-<footer>Les données sont enregistrées sur cet appareil.</footer>
+<footer>Mon suivi course • 24 semaines</footer>
+</main>
 
 <script>
-const names=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-const plans={
-  0:{title:"Repos complet",strength:false,run:false},
-  1:{title:"Pectoraux • Épaules • Triceps + course",strength:true,run:true},
-  2:{title:"Dos • Biceps",strength:true,run:false},
-  3:{title:"Jambes complètes + course",strength:true,run:true},
-  4:{title:"Haut du corps",strength:true,run:false},
-  5:{title:"Points faibles musculaires + course",strength:true,run:true},
-  6:{title:"Repos complet",strength:false,run:false}
-};
-const today=new Date();
-let shown=new Date(today.getFullYear(),today.getMonth(),1);
-let selected=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-let records=JSON.parse(localStorage.getItem("sportRecords")||"{}");
-const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-const getPlan=d=>plans[d.getDay()];
-function save(){localStorage.setItem("sportRecords",JSON.stringify(records));renderStats();}
-function record(){const k=key(selected);if(!records[k])records[k]={};return records[k];}
-function changeMonth(n){shown=new Date(shown.getFullYear(),shown.getMonth()+n,1);renderCalendar();}
+const startDate = new Date(2026,10,16);
+
+const program = [
+["20–25 min facile","8 × (1 min soutenue / 2 min facile ou marche)","30 min facile"],
+["25 min facile","8 × (1 min 30 soutenue / 2 min facile)","35 min facile"],
+["25–30 min facile","6 × (2 min soutenue / 2 min facile)","40 min facile"],
+["20–25 min facile","20 min facile sans accélérations","30–35 min facile"],
+["30 min facile","5 × (3 min soutenue / 2 min facile)","45 min facile"],
+["30–35 min facile","25 min facile + 4 accélérations de 15 s","50 min facile"],
+["35 min facile","6 × (3 min soutenue / 2 min facile)","55 min facile"],
+["25–30 min facile","25 min facile","40–45 min facile"],
+["35 min facile","3 × (5 min soutenue / 3 min facile)","60 min facile"],
+["35–40 min facile","30 min facile + 4 accélérations de 20 s","70 min facile"],
+["40 min facile","5 × (4 min soutenue / 2 min facile)","75 min facile"],
+["30 min facile","30 min facile","55–60 min facile"],
+["40 min facile","2 × (10 min allure régulière / 4 min facile)","80 min facile"],
+["40–45 min facile","6 × (3 min soutenue / 2 min facile)","90 min facile"],
+["45 min facile","35 min facile + 5 accélérations de 20 s","100 min facile"],
+["35 min facile","30 min facile","70 min facile"],
+["45 min facile","3 × (8 min allure régulière / 3 min facile)","105 min facile"],
+["45 min facile","6 × (4 min soutenue / 2 min facile)","115 min facile"],
+["45–50 min facile","40 min facile + 5 accélérations de 20 s","125 min facile"],
+["35–40 min facile","30 min facile","90 min facile"],
+["50 min facile","2 × (12 min allure régulière / 4 min facile)","135 min facile"],
+["45 min facile","35 min facile sans forcer","Maximum 150 min facile"],
+["35 min facile","25 min facile + 4 accélérations de 15 s","75–85 min facile"],
+["25 min facile","15–20 min très facile","SEMI-MARATHON : 21,1 km"]
+];
+
+const weekdays = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+const runDays = [0,2,4];
+const storageKey = "monSuiviCourse24";
+let results = JSON.parse(localStorage.getItem(storageKey) || "{}");
+let selected = null;
+
+function dateFor(week,day){
+  const d = new Date(startDate);
+  d.setDate(d.getDate()+week*7+day);
+  return d;
+}
+
+function dateKey(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function dateLabel(d){
+  return d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
+}
+
 function renderCalendar(){
- const title=shown.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
- document.getElementById("monthTitle").textContent=title.charAt(0).toUpperCase()+title.slice(1);
- const cal=document.getElementById("calendar");cal.innerHTML="";
- ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].forEach(x=>{let e=document.createElement("div");e.className="weekday";e.textContent=x;cal.appendChild(e);});
- let offset=(shown.getDay()+6)%7;
- for(let i=0;i<offset;i++){let e=document.createElement("div");cal.appendChild(e);}
- const total=new Date(shown.getFullYear(),shown.getMonth()+1,0).getDate();
- for(let n=1;n<=total;n++){
-  let d=new Date(shown.getFullYear(),shown.getMonth(),n),e=document.createElement("button");
-  e.className="day";e.textContent=n;
-  if(key(d)===key(selected))e.classList.add("selected");
-  if(key(d)===key(today))e.classList.add("today");
-  let p=getPlan(d),r=records[key(d)]||{};
-  if((p.strength&&r.strengthDone)||(p.run&&r.runDone)){let dot=document.createElement("span");dot.className="dot";dot.textContent="✓";e.appendChild(dot);}
-  e.onclick=()=>{selected=d;renderCalendar();renderSession();};
-  cal.appendChild(e);
- }
-}
-function renderSession(){
- const p=getPlan(selected),r=record();
- document.getElementById("selectedTitle").textContent=selected.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
- document.getElementById("dayType").textContent=p.title;
- let html="";
- if(!p.strength&&!p.run){
-  html="<p>🧘 Repos complet. Profite de ta récupération !</p>";
- }else{
-  if(p.strength){
-   html+=`<h3>🏋️ Musculation</h3>
-   <label class="check"><input type="checkbox" id="strengthDone" ${r.strengthDone?"checked":""}> Séance de musculation terminée</label>
-   <label>Détails de ma séance (exercices, séries, répétitions, charges, sensations)</label>
-   <textarea id="strengthNotes" placeholder="Exemple : Développé couché — 3 × 10 — 40 kg">${escapeText(r.strengthNotes||"")}</textarea>`;
-  }
-  if(p.run){
-   html+=`<h3>🏃 Course à pied</h3>
-   <label class="check"><input type="checkbox" id="runDone" ${r.runDone?"checked":""}> Course terminée</label>
-   <label>Ma séance (durée, distance, allure, intervalles, sensations)</label>
-   <textarea id="runNotes" placeholder="Exemple : 30 minutes faciles, 4 km">${escapeText(r.runNotes||"")}</textarea>`;
-  }
-  if(!p.run)html+=`<div class="small">Pas de course prévue aujourd'hui.</div>`;
-  if(!p.strength)html+=`<div class="small">Pas de musculation prévue aujourd'hui.</div>`;
- }
- document.getElementById("sessionArea").innerHTML=html;
- ["strengthDone","runDone","strengthNotes","runNotes"].forEach(id=>{
-  let el=document.getElementById(id);if(!el)return;
-  el.addEventListener("change",()=>{
-   let r=record();
-   if(id==="strengthDone")r.strengthDone=el.checked;
-   if(id==="runDone")r.runDone=el.checked;
-   if(id==="strengthNotes")r.strengthNotes=el.value;
-   if(id==="runNotes")r.runNotes=el.value;
-   save();renderCalendar();
+  const container = document.getElementById("weeks");
+  container.innerHTML = "";
+
+  program.forEach((week,index)=>{
+    const section = document.createElement("section");
+    section.className = "week";
+
+    const title = document.createElement("h3");
+    title.textContent = "Semaine "+(index+1);
+    section.appendChild(title);
+
+    weekdays.forEach((day,dayIndex)=>{
+      const d = dateFor(index,dayIndex);
+      const key = dateKey(d);
+      const saved = results[key] || {};
+      const isRun = runDays.includes(dayIndex);
+
+      const card = document.createElement("div");
+      card.className = "day";
+      if(!isRun) card.classList.add("rest");
+      if(isRun && saved.completed) card.classList.add("done");
+
+      const heading = document.createElement("strong");
+      heading.textContent = day+" • "+dateLabel(d);
+
+      const description = document.createElement("small");
+      if(isRun){
+        description.textContent = program[index][runDays.indexOf(dayIndex)];
+      }else{
+        description.textContent = "Repos";
+      }
+
+      const status = document.createElement("p");
+      status.className = "tag";
+      if(isRun){
+        status.textContent = saved.completed ? "✓ Séance validée" : "Voir la séance →";
+      }else{
+        status.textContent = "Jour sans course";
+      }
+
+      card.append(heading,description,status);
+
+      if(isRun){
+        card.onclick = ()=>openSession(index,dayIndex);
+      }
+      section.appendChild(card);
+    });
+
+    container.appendChild(section);
   });
-  if(el.tagName==="TEXTAREA")el.addEventListener("input",()=>{
-   let r=record();r[id==="strengthNotes"?"strengthNotes":"runNotes"]=el.value;save();
+
+  updateRecords();
+}
+
+function openSession(week,dayIndex){
+  selected = {week,dayIndex};
+  const d = dateFor(week,dayIndex);
+  const key = dateKey(d);
+  const saved = results[key] || {};
+  const workout = program[week][runDays.indexOf(dayIndex)];
+
+  document.getElementById("calendar").classList.add("hidden");
+  document.getElementById("details").classList.remove("hidden");
+
+  document.getElementById("detailWeek").textContent = "SEMAINE "+(week+1);
+  document.getElementById("detailTitle").textContent = weekdays[dayIndex];
+  document.getElementById("detailDate").textContent = dateLabel(d);
+
+  const isIntervals = workout.includes("×") || workout.includes("accélérations");
+  document.getElementById("warmup").textContent =
+    isIntervals ? "8 à 10 minutes de course très facile." : "5 minutes de course tranquille.";
+
+  document.getElementById("mainWorkout").textContent = workout+".";
+
+  document.getElementById("cooldown").textContent =
+    isIntervals ? "5 à 10 minutes très faciles." : "5 minutes de marche.";
+
+  document.getElementById("completed").checked = !!saved.completed;
+  document.getElementById("distance").value = saved.distance || "";
+  document.getElementById("time").value = saved.time || "";
+  document.getElementById("pace").value = saved.pace || "";
+}
+
+function validateSession(){
+  if(!selected)return;
+
+  const d = dateFor(selected.week,selected.dayIndex);
+  const key = dateKey(d);
+
+  results[key] = {
+    completed:true,
+    distance:document.getElementById("distance").value,
+    time:document.getElementById("time").value.trim(),
+    pace:document.getElementById("pace").value.trim()
+  };
+
+  localStorage.setItem(storageKey,JSON.stringify(results));
+
+  document.getElementById("details").classList.add("hidden");
+  document.getElementById("calendar").classList.remove("hidden");
+  renderCalendar();
+  window.scrollTo(0,0);
+}
+
+function goBack(){
+  document.getElementById("details").classList.add("hidden");
+  document.getElementById("calendar").classList.remove("hidden");
+  renderCalendar();
+}
+
+function paceToSeconds(value){
+  const match = value.match(/^(\d{1,2}):([0-5]\d)$/);
+  if(!match)return null;
+  return Number(match[1])*60+Number(match[2]);
+}
+
+function updateRecords(){
+  let maxDistance = 0;
+  let bestPace = null;
+
+  Object.values(results).forEach(r=>{
+    const distance = parseFloat(String(r.distance || "").replace(",","."));
+    if(Number.isFinite(distance) && distance>maxDistance){
+      maxDistance = distance;
+    }
+
+    const pace = paceToSeconds(r.pace || "");
+    if(pace!==null && (bestPace===null || pace<bestPace)){
+      bestPace = pace;
+    }
   });
- });
+
+  document.getElementById("bestDistance").textContent =
+    maxDistance.toLocaleString("fr-FR",{maximumFractionDigits:2})+" km";
+
+  document.getElementById("bestPace").textContent =
+    bestPace===null ? "--:-- /km" :
+    Math.floor(bestPace/60)+":"+String(bestPace%60).padStart(2,"0")+" /km";
 }
-function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function renderStats(){
- let s=0,r=0;
- Object.values(records).forEach(x=>{if(x.strengthDone)s++;if(x.runDone)r++;});
- document.getElementById("strengthCount").textContent=s;
- document.getElementById("runCount").textContent=r;
-}
-renderCalendar();renderSession();renderStats();
+
+renderCalendar();
 </script>
 </body>
 </html>
