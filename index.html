@@ -88,14 +88,17 @@ input{width:100%;padding:12px;border-radius:9px;border:1px solid var(--border);b
 </div>
 
 <div class="panel">
-<div class="records-heading"><h2>🏆 Mes records personnels</h2></div>
+<div class="records-heading">
+  <h2>🏆 Mes records personnels</h2>
+  <button class="menu-btn" type="button" aria-label="Afficher ou masquer les records par distance" title="Afficher les records par distance" onclick="toggleDistanceRecords()">⋯</button>
+</div>
 <div class="records">
   <div class="record"><div>📏</div><h3>Distance</h3><div class="value" id="recordDistance">— km</div><div class="caption">Plus longue sortie</div></div>
   <div class="record"><div>⏱️</div><h3>Temps</h3><div class="value" id="recordTime">—</div><div class="caption">Temps de cette sortie</div></div>
   <div class="record"><div>⚡</div><h3>Allure</h3><div class="value" id="recordPace">— min/km</div><div class="caption">Meilleure allure moyenne</div></div>
   <div class="record"><div>🔥</div><h3>Calories</h3><div class="value" id="recordCalories">0 kcal</div><div class="caption">Total des calories brûlées</div></div>
 </div>
-<div id="distanceRecords" class="distance-records">
+<div id="distanceRecords" class="distance-records hidden">
   <h3>Records par distance</h3>
   <p class="note">Temps réels si tu as couru exactement cette distance ; sinon, estimation à partir de ton allure moyenne.</p>
   <div class="distance-grid">
@@ -108,7 +111,10 @@ input{width:100%;padding:12px;border-radius:9px;border:1px solid var(--border);b
 </div>
 
 <div class="panel">
-  <div class="records-heading"><h2>📈 Mon suivi de progression</h2><button class="menu-btn" type="button" aria-label="Afficher ou masquer le suivi de progression" title="Afficher le suivi de progression" onclick="toggleDashboard()">⋯</button></div>
+  <div class="records-heading">
+    <h2>📈 Mon suivi de progression</h2>
+    <button class="menu-btn" type="button" aria-label="Afficher ou masquer le suivi de progression" title="Afficher le suivi de progression" onclick="toggleDashboard()">⋯</button>
+  </div>
   <div id="dashboardContent" class="dashboard-grid hidden">
     <div class="dashboard-card">
       <h3>🎯 Mon objectif personnel</h3>
@@ -406,10 +412,20 @@ function formatRecordTime(seconds){
   if(h>0)return h+" h "+String(m).padStart(2,"0")+" min";
   return m+":"+String(s).padStart(2,"0");
 }
+
+function toggleDistanceRecords(){
+  const content=document.getElementById("distanceRecords");
+  content.classList.toggle("hidden");
+  const button=content.parentElement.querySelector(".records-heading .menu-btn");
+  const isHidden=content.classList.contains("hidden");
+  button.title=isHidden?"Afficher les records par distance":"Masquer les records par distance";
+  button.setAttribute("aria-label",button.title);
+}
+
 function toggleDashboard(){
   const content=document.getElementById("dashboardContent");
   content.classList.toggle("hidden");
-  const button=document.querySelector("#dashboardContent").previousElementSibling.querySelector(".menu-btn");
+  const button=content.previousElementSibling.querySelector(".menu-btn");
   const isHidden=content.classList.contains("hidden");
   button.title=isHidden?"Afficher le suivi de progression":"Masquer le suivi de progression";
   button.setAttribute("aria-label",button.title);
